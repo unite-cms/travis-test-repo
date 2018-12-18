@@ -1,0 +1,92 @@
+language: php
+
+sudo: false
+dist: trusty
+os: linux
+
+cache:
+  directories:
+    - vendor
+    - coverage
+
+addons:
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+
+matrix:
+    include:
+        - php: 7.1
+          if: (type == push AND fork = false) OR (type == pull_request AND forke = true)
+          env:
+            - PHPUNIT_CONF=phpunit.xml.dist
+        - php: 7.2
+          if: (type == push AND fork = false) OR (type == pull_request AND forke = true)
+          env:
+            - PHPUNIT_CONF=phpunit_parameter.xml.dist
+        - php: 7.2
+          if: (type == push AND fork = false) OR (type == pull_request AND forke = true)
+          env:
+            - PHPUNIT_CONF=phpunit_subdomain.xml.dist
+        - php: 7.2
+          if: type == push AND branch = master AND fork = false
+          env:
+            - PHPUNIT_CONF=phpunit.xml.dist
+            - COVERAGE_FILTER='UniteCMS\\CoreBundle\\Tests'
+            - COVERAGE_ID=1
+        - php: 7.2
+          if: type == push AND branch = master AND fork = false
+          env:
+            - PHPUNIT_CONF=phpunit.xml.dist
+            - COVERAGE_FILTER='UniteCMS\\(CollectionField|Registration|Storage|VariantsField|WysiwygField)Bundle\\Tests'
+            - COVERAGE_ID=2
+
+    fast_finish: true
+
+cache:
+    directories:
+        - $HOME/.composer/cache/files
+
+services:
+  - mysql
+
+before_install:
+  - |
+    if ! [[ $COVERAGE_FILTER ]]; then
+      phpenv config-rm xdebug.ini
+    fi
+  - composer self-update
+  - mysql -e 'CREATE DATABASE unite_test;'
+  - cp .env.dist .env
+
+install:
+  - composer install
+
+before_script:
+  - |
+    if [[ $COVERAGE_FILTER ]]; then
+      curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      chmod +x ./cc-test-reporter
+      ./cc-test-reporter before-build
+    fi
+script:
+  - |
+    if [[ $COVERAGE_FILTER ]]; then
+      phpunit --configuration $PHPUNIT_CONF --coverage-clover clover.xml --filter $COVERAGE_FILTER
+    else
+      phpunit --configuration $PHPUNIT_CONF
+    fi
+after_success:
+  - |
+    if [[ $COVERAGE_FILTER ]]; then
+      if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then 
+        ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
+        
+        if [[ "$COVERAGE_ID" == 1 ]]; then 
+          ./cc-test-reporter sum-coverage coverage/clover.*.xml -o coverage/clover.xml
+          ./cc-test-reporter upload-coverage -i coverage/clover.xml
+        fi
+      fi
+    fi
