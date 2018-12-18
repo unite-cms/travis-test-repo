@@ -78,15 +78,23 @@ script:
     else
       phpunit --configuration $PHPUNIT_CONF
     fi
+
+#after_script:
+#  - ./cc-test-reporter format-coverage -t simplecov -o coverage/codeclimate.backend.json coverage/backend/.resultset.json # Format backend coverage
+#  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.frontend.json coverage/frontend/lcov.info  # Format frontend coverage
+#  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 2                  # Sum both coverage parts into coverage/codeclimate.json
+#  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
+
 after_success:
   - |
     if [[ $COVERAGE_FILTER ]]; then
+
+      ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
+      ./cc-test-reporter sum-coverage coverage/clover.*.xml -o coverage/clover.xml -p 2 
+
       if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then 
-        ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
+
+        ./cc-test-reporter upload-coverage -i coverage/clover.xml
         
-        if [[ "$COVERAGE_ID" == 1 ]]; then 
-          ./cc-test-reporter sum-coverage coverage/clover.*.xml -o coverage/clover.xml
-          ./cc-test-reporter upload-coverage -i coverage/clover.xml
-        fi
       fi
     fi
