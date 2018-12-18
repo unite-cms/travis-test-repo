@@ -49,8 +49,8 @@ cache:
     directories:
         - $HOME/.composer/cache/files
 
-services:
-  - mysql
+#services:
+#  - mysql
 
 before_install:
   - |
