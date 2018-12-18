@@ -9,39 +9,39 @@ cache:
     - vendor
     - coverage
 
-addons:
-  apt:
-    sources:
-      - mysql-5.7-trusty
-    packages:
-      - mysql-server
+#addons:
+#  apt:
+#    sources:
+#      - mysql-5.7-trusty
+#    packages:
+#      - mysql-server
 
 matrix:
     include:
-        - php: 7.1
-          if: (type == push AND fork = false) OR (type == pull_request AND forke = true)
-          env:
-            - PHPUNIT_CONF=phpunit.xml.dist
-        - php: 7.2
-          if: (type == push AND fork = false) OR (type == pull_request AND forke = true)
-          env:
-            - PHPUNIT_CONF=phpunit_parameter.xml.dist
-        - php: 7.2
-          if: (type == push AND fork = false) OR (type == pull_request AND forke = true)
-          env:
-            - PHPUNIT_CONF=phpunit_subdomain.xml.dist
         - php: 7.2
           if: type == push AND branch = master AND fork = false
           env:
             - PHPUNIT_CONF=phpunit.xml.dist
-            - COVERAGE_FILTER='UniteCMS\\CoreBundle\\Tests'
+            - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
             - COVERAGE_ID=1
         - php: 7.2
           if: type == push AND branch = master AND fork = false
           env:
             - PHPUNIT_CONF=phpunit.xml.dist
-            - COVERAGE_FILTER='UniteCMS\\(CollectionField|Registration|Storage|VariantsField|WysiwygField)Bundle\\Tests'
+            - COVERAGE_FILTER='App\\Tests\\ControllerList'
             - COVERAGE_ID=2
+        - php: 7.2
+          if: type == push AND branch = master AND fork = false
+          env:
+            - PHPUNIT_CONF=phpunit.xml.dist
+            - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
+            - COVERAGE_ID=3
+        - php: 7.2
+          if: type == push AND branch = master AND fork = false
+          env:
+            - PHPUNIT_CONF=phpunit.xml.dist
+            - COVERAGE_FILTER='App\\Tests\\ControllerView'
+            - COVERAGE_ID=4
 
     fast_finish: true
 
@@ -58,8 +58,8 @@ before_install:
       phpenv config-rm xdebug.ini
     fi
   - composer self-update
-  - mysql -e 'CREATE DATABASE unite_test;'
-  - cp .env.dist .env
+#  - mysql -e 'CREATE DATABASE travis_test;'
+  - cp .env.test .env
 
 install:
   - composer install

@@ -1,3 +1,15 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: /
+    controller: App\Controller\TestController::index
+
+view:
+    path: /view
+    controller: App\Controller\TestController::view
+
+list:
+    path: /list
+    controller: App\Controller\TestController::list
+
+update:
+    path: /update
+    controller: App\Controller\TestController::update
