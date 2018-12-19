@@ -18,11 +18,10 @@ addons:
 
 stages:
   - name: test
-    if: type == push AND branch = master AND fork = false
   - name: submit
-    if: type == push AND branch = master AND fork = false
 
 matrix:
+  fast_finish: true
   include:
     - php: 7.1
       if: type == push AND branch = master AND fork = false
@@ -35,7 +34,7 @@ matrix:
       env:
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#       - COVERAGE_ID=1
+        - COVERAGE_ID=1
 #        - php: 7.2
 #          if: type == push AND branch = master AND fork = false
 #          env:
@@ -55,7 +54,7 @@ matrix:
 #            - COVERAGE_FILTER='App\\Tests\\ControllerView'
 #            - COVERAGE_ID=4
 #
-    fast_finish: true
+  
 
 cache:
     directories:
