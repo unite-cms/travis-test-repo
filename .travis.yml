@@ -75,6 +75,7 @@ services:
 
 jobs:
   include:
+    - stage: test
     - stage: test1_with_coverage
       php: 7.2
       env:
