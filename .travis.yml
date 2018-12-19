@@ -28,29 +28,33 @@ jobs:
     - php: 7.1
       if: type == push AND branch = master AND fork = false
       env:
+        - TEST = 1
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
         - COVERAGE_ID=1
     - php: 7.2
       if: type == push AND branch = master AND fork = false
       env:
+        - TEST = 1
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerList'
         - COVERAGE_ID=2
     - php: 7.2
       if: type == push AND branch = master AND fork = false
       env:
+        - TEST = 1
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
         - COVERAGE_ID=3
     - php: 7.2
       if: type == push AND branch = master AND fork = false
       env:
+        - TEST = 1
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerView'
         - COVERAGE_ID=4
     - stage: submit
-      env: 
+      env:
       script:
         - true
       after_script:
@@ -64,13 +68,18 @@ before_install:
     if ! [[ $COVERAGE_FILTER ]]; then
       phpenv config-rm xdebug.ini
     fi
-  - composer self-update
-  - mysql -e 'CREATE DATABASE travis_test;'
-  - cp .env.dist .env
+    if ! [[ $TEST ]]; then
+      composer self-update
+      mysql -e 'CREATE DATABASE travis_test;'
+      cp .env.dist .env
+    fi
 
 install:
-  - sudo apt-get install -y awscli
-  - composer install
+  - |
+    sudo apt-get install -y awscli
+    if ! [[ $TEST ]]; then
+      ccomposer install
+    fi
 
 before_script:
   - |
