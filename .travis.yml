@@ -60,7 +60,6 @@ jobs:
       script:
         - true
       after_script:
-        - echo "Get all test coverages from s3 bucket, sum coverage and Upload it to Code Climate"
         - s3cmd sync "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT" coverage/ 
         - ./cc-test-reporter sum-coverage --output - --parts $JOB_COUNT_COVERAGE coverage/clover.*.xml | ./cc-test-reporter upload-coverage --input - 
 
@@ -98,7 +97,6 @@ script:
 after_success:
   - |
     if [[ $COVERAGE_FILTER ]]; then
-      echo "Formatting and uploading Test Results to S3"
       ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
-      s3cmd sync coverage/ "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT" 
+      s3cmd sync coverage/ "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT"
     fi
