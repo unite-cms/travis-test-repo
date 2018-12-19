@@ -76,6 +76,12 @@ services:
 
 jobs:
   include:
+    - stage: tests_with_coverage
+      env: 
+      script:
+        - true
+      after_script:
+         - echo "coverage"
     - stage: submit
       env: 
       script:
