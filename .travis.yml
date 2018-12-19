@@ -17,26 +17,15 @@ addons:
       - mysql-server
 
 stages:
-  - test
+  - tests
   - submit
 
 env:
   global:
     - JOB_COUNT=4 # four jobs generate test coverages
   matrix:
-    - php: 7.1
-      env:
-        - PHPUNIT_CONF=phpunit.xml.dist
-#        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#        - COVERAGE_ID=1
-    - php: 7.2
-      env:
-        - PHPUNIT_CONF=phpunit.xml.dist
-#        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#        - COVERAGE_ID=1
-#    - TEST_TYPE=examples
-#    - TEST_TYPE=tests
-#    - TEST_TYPE=eth
+    - TEST_TYPE=tests
+    - TEST_TYPE=tests_with_coverage
 
 #matrix:
 #    include:
@@ -76,11 +65,37 @@ services:
 
 jobs:
   include:
-#    - stage: test
-#      env: TEST_TYPE=env
-#      script:
-#        - ./cc-test-reporter before-build
-#      after_success:
+    - stage: tests
+      env:
+      matrix:
+        include:
+          - php: 7.2
+            if: type == push AND branch = master AND fork = false
+            env:
+              - PHPUNIT_CONF=phpunit.xml.dist
+              - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+              - COVERAGE_ID=1
+          - php: 7.2
+            if: type == push AND branch = master AND fork = false
+            env:
+              - PHPUNIT_CONF=phpunit.xml.dist
+              - COVERAGE_FILTER='App\\Tests\\ControllerList'
+              - COVERAGE_ID=2
+          - php: 7.2
+            if: type == push AND branch = master AND fork = false
+            env:
+              - PHPUNIT_CONF=phpunit.xml.dist
+              - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
+              - COVERAGE_ID=3
+          - php: 7.2
+            if: type == push AND branch = master AND fork = false
+            env:
+              - PHPUNIT_CONF=phpunit.xml.dist
+              - COVERAGE_FILTER='App\\Tests\\ControllerView'
+              - COVERAGE_ID=4
+      fast_finish: true
+      script:
+      after_success:
     - stage: submit
       env: TEST_TYPE=env
       script:
