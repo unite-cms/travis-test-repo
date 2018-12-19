@@ -37,7 +37,11 @@ env:
     - JOB_COUNT=2 # four jobs generate test coverages
   matrix:
     - php: 7.1
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
     - php: 7.2
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
 
 #matrix:
 #    include:
