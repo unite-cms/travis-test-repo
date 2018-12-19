@@ -69,18 +69,14 @@ before_install:
     if ! [[ $COVERAGE_FILTER ]]; then
       phpenv config-rm xdebug.ini
     fi
-    if [[ $IS_TEST ]]; then
-      composer self-update
-      mysql -e 'CREATE DATABASE travis_test;'
-      cp .env.dist .env
-    fi
+    
+    composer self-update
+    mysql -e 'CREATE DATABASE travis_test;'
+    cp .env.dist .env
 
 install:
   - sudo apt-get install -y awscli s3cmd
-  - |
-    if [[ $IS_TEST ]]; then
-      composer install
-    fi
+  - composer install
 
 before_script:
   - |
