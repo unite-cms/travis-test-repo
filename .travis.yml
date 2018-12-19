@@ -67,6 +67,12 @@ jobs:
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
         - COVERAGE_ID=1
+    - php: 7.2
+      if: type == push AND branch = master AND fork = false
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+        - COVERAGE_FILTER='App\\Tests\\ControllerList'
+        - COVERAGE_ID=2
     - stage: submit
       env: 
       script:
