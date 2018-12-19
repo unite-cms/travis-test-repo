@@ -55,13 +55,13 @@ jobs:
         - COVERAGE_ID=4
     - stage: submit
       env:
+        - JOB_COUNT_COVERAGE=4 # 4 jobs are generating coverages
       script:
         - true
       after_script:
-         - echo "submitted"
-#        - aws s3 sync "s3://xxxxx/coverage/$TRAVIS_COMMIT" coverage/ 
-#        - ./cc-test-reporter sum-coverage --output - --parts $JOB_COUNT coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --input -
-
+        - echo "Sum Coverage and Upload it to Code Climate"
+#       - aws s3 sync "s3://xxxxx/coverage/$TRAVIS_COMMIT" coverage/ 
+        - ./cc-test-reporter sum-coverage --output - --parts $JOB_COUNT_COVERAGE coverage/clover.*.xml | ./cc-test-reporter upload-coverage --input - 
 
 before_install:
   - |
@@ -75,10 +75,10 @@ before_install:
     fi
 
 install:
+  - sudo apt-get install -y awscli
   - |
-    sudo apt-get install -y awscli
     if ! [[ $TEST ]]; then
-      ccomposer install
+      composer install
     fi
 
 before_script:
@@ -98,20 +98,6 @@ script:
     fi
 
 after_success:
-  - echo "finished"
-#  - ./cc-test-reporter format-coverage -t coverage.py -o "coverage/codeclimate.$TEST_TYPE.json"
+  - echo "Formatting and uploading Test Results"
+  - ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
 #  - aws s3 sync coverage/ "s3://xxxxxxxxx/coverage/$TRAVIS_COMMIT"
-
-#after_success:
-#  - |
-#    if [[ $COVERAGE_FILTER ]]; then
-#
-#      ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
-#      ./cc-test-reporter sum-coverage coverage/clover.*.xml -o coverage/clover.xml --parts 4 
-#
-#      if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then 
-#
-#        ./cc-test-reporter upload-coverage -i coverage/clover.xml
-#        
-#      fi
-#    fi
