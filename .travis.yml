@@ -9,12 +9,25 @@ cache:
     - vendor
     - coverage
 
-#addons:
-#  apt:
-#    sources:
-#      - mysql-5.7-trusty
-#    packages:
-#      - mysql-server
+addons:
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+
+stages:
+  - prepare
+  - test
+  - submit
+
+env:
+  global:
+    - JOB_COUNT=4 # four jobs generate test coverages
+  matrix:
+    - TEST_TYPE=examples
+    - TEST_TYPE=tests
+    - TEST_TYPE=eth
 
 matrix:
     include:
@@ -49,8 +62,25 @@ cache:
     directories:
         - $HOME/.composer/cache/files
 
-#services:
-#  - mysql
+services:
+  - mysql
+
+jobs:
+  include:
+    - stage: prepare
+      env: TEST_TYPE=env
+      script:
+        - ./cc-test-reporter before-build
+      after_success:
+    - stage: submit
+      env: TEST_TYPE=env
+      script:
+        - true
+      after_script:
+         - echo "submitted"
+#        - aws s3 sync "s3://xxxxx/coverage/$TRAVIS_COMMIT" coverage/ 
+#        - ./cc-test-reporter sum-coverage --output - --parts $JOB_COUNT coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --input -
+
 
 before_install:
   - |
@@ -58,19 +88,18 @@ before_install:
       phpenv config-rm xdebug.ini
     fi
   - composer self-update
-#  - mysql -e 'CREATE DATABASE travis_test;'
-  - cp .env.test .env
+  - mysql -e 'CREATE DATABASE travis_test;'
+  - cp .env.dist .env
 
 install:
-  - composer install
-
-before_script:
   - |
     if [[ $COVERAGE_FILTER ]]; then
       curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       chmod +x ./cc-test-reporter
-      ./cc-test-reporter before-build
     fi
+  - sudo apt-get install -y awscli
+  - composer install
+
 script:
   - |
     if [[ $COVERAGE_FILTER ]]; then
@@ -79,22 +108,21 @@ script:
       phpunit --configuration $PHPUNIT_CONF
     fi
 
-#after_script:
-#  - ./cc-test-reporter format-coverage -t simplecov -o coverage/codeclimate.backend.json coverage/backend/.resultset.json # Format backend coverage
-#  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.frontend.json coverage/frontend/lcov.info  # Format frontend coverage
-#  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 2                  # Sum both coverage parts into coverage/codeclimate.json
-#  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
-
 after_success:
-  - |
-    if [[ $COVERAGE_FILTER ]]; then
+  - echo "finished"
+#  - ./cc-test-reporter format-coverage -t coverage.py -o "coverage/codeclimate.$TEST_TYPE.json"
+#  - aws s3 sync coverage/ "s3://xxxxxxxxx/coverage/$TRAVIS_COMMIT"
 
-      ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
-      ./cc-test-reporter sum-coverage coverage/clover.*.xml -o coverage/clover.xml --parts 4 
-
-      if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then 
-
-        ./cc-test-reporter upload-coverage -i coverage/clover.xml
-        
-      fi
-    fi
+#after_success:
+#  - |
+#    if [[ $COVERAGE_FILTER ]]; then
+#
+#      ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
+#      ./cc-test-reporter sum-coverage coverage/clover.*.xml -o coverage/clover.xml --parts 4 
+#
+#      if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then 
+#
+#        ./cc-test-reporter upload-coverage -i coverage/clover.xml
+#        
+#      fi
+#    fi
