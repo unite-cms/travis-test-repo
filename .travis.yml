@@ -68,7 +68,7 @@ before_install:
     if ! [[ $COVERAGE_FILTER ]]; then
       phpenv config-rm xdebug.ini
     fi
-    if ! [[ $TEST ]]; then
+    if [[ $TEST ]]; then
       composer self-update
       mysql -e 'CREATE DATABASE travis_test;'
       cp .env.dist .env
@@ -77,17 +77,15 @@ before_install:
 install:
   - sudo apt-get install -y awscli
   - |
-    if ! [[ $TEST ]]; then
+    if [[ $TEST ]]; then
       composer install
     fi
 
 before_script:
   - |
-    if [[ $COVERAGE_FILTER ]]; then
-      curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      chmod +x ./cc-test-reporter
-      ./cc-test-reporter before-build
-    fi
+    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    chmod +x ./cc-test-reporter
+    ./cc-test-reporter before-build
 
 script:
   - |
@@ -98,6 +96,10 @@ script:
     fi
 
 after_success:
-  - echo "Formatting and uploading Test Results"
-  - ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
+  - |
+    if [[ $COVERAGE_FILTER ]]; then
+      echo "Formatting and uploading Test Results"
+      ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
+      aws s3 sync coverage/ "s3://xxxxxxxxx/coverage/$TRAVIS_COMMIT"
+    fi
 #  - aws s3 sync coverage/ "s3://xxxxxxxxx/coverage/$TRAVIS_COMMIT"
