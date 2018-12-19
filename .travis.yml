@@ -16,42 +16,6 @@ addons:
     packages:
       - mysql-server
 
-#matrix:
-#  fast_finish: true
-#  include:
-#    - php: 7.1
-#      if: type == push AND branch = master AND fork = false
-#      env:
-#        - PHPUNIT_CONF=phpunit.xml.dist
-#        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#        - COVERAGE_ID=1
-#    - php: 7.2
-#      if: type == push AND branch = master AND fork = false
-#      env:
-#        - PHPUNIT_CONF=phpunit.xml.dist
-#        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#        - COVERAGE_ID=1
-#        - php: 7.2
-#          if: type == push AND branch = master AND fork = false
-#          env:
-#            - PHPUNIT_CONF=phpunit.xml.dist
-#            - COVERAGE_FILTER='App\\Tests\\ControllerList'
-#            - COVERAGE_ID=2
-#        - php: 7.2
-#          if: type == push AND branch = master AND fork = false
-#          env:
-#            - PHPUNIT_CONF=phpunit.xml.dist
-#            - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
-#            - COVERAGE_ID=3
-#        - php: 7.2
-#          if: type == push AND branch = master AND fork = false
-#          env:
-#            - PHPUNIT_CONF=phpunit.xml.dist
-#            - COVERAGE_FILTER='App\\Tests\\ControllerView'
-#            - COVERAGE_ID=4
-#
-  
-
 cache:
     directories:
         - $HOME/.composer/cache/files
@@ -73,6 +37,18 @@ jobs:
         - PHPUNIT_CONF=phpunit.xml.dist
         - COVERAGE_FILTER='App\\Tests\\ControllerList'
         - COVERAGE_ID=2
+    - php: 7.2
+      if: type == push AND branch = master AND fork = false
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+        - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
+        - COVERAGE_ID=3
+    - php: 7.2
+      if: type == push AND branch = master AND fork = false
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+        - COVERAGE_FILTER='App\\Tests\\ControllerView'
+        - COVERAGE_ID=4
     - stage: submit
       env: 
       script:
