@@ -4,10 +4,6 @@ sudo: false
 dist: trusty
 os: linux
 
-php:
- - 7.1
- - 7.2
-
 cache:
   directories:
     - vendor
@@ -21,18 +17,16 @@ addons:
       - mysql-server
 
 stages:
-  - test
-  - submit
+  - name: test
+    if: type == push AND branch = master AND fork = false
+  - name: tests_with_coverage
+    if: type == push AND branch = master AND fork = false
+  - name: submit
+    if: type == push AND branch = master AND fork = false
 
 env:
   global:
-    - JOB_COUNT=4 # four jobs generate test coverages
-
-matrix:
-  fast_finish: true
-  include:
-    - php: 7.1
-    - php: 7.2
+    - JOB_COUNT=3 # four jobs generate test coverages
 
 #matrix:
 #    include:
@@ -73,6 +67,7 @@ services:
 jobs:
   include:
     - stage: test
+      php: 7.1
       env:
       script:
       after_success:
