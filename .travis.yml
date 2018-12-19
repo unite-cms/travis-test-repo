@@ -24,25 +24,20 @@ stages:
   - name: submit
     if: type == push AND branch = master AND fork = false
 
-env:
-  global:
-    - JOB_COUNT=2 # four jobs generate test coverages
-  matrix:
+matrix:
+  include:
     - php: 7.1
+      if: type == push AND branch = master AND fork = false
       env:
         - PHPUNIT_CONF=phpunit.xml.dist
+        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+        #- COVERAGE_ID=1
     - php: 7.2
+      if: type == push AND branch = master AND fork = false
       env:
         - PHPUNIT_CONF=phpunit.xml.dist
-
-#matrix:
-#    include:
-#        - php: 7.2
-#          if: type == push AND branch = master AND fork = false
-#          env:
-#            - PHPUNIT_CONF=phpunit.xml.dist
-#            - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#            - COVERAGE_ID=1
+        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+        #- COVERAGE_ID=1
 #        - php: 7.2
 #          if: type == push AND branch = master AND fork = false
 #          env:
