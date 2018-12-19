@@ -75,17 +75,18 @@ services:
 
 jobs:
   include:
-    - stage: tests_with_coverage
-      php: 
-       - 7.2
-       - 7.2
-       - 7.2
-       - 7.2
+    - stage: test1_with_coverage
+      php: 7.2
       env:
        - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=1 COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-       - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=2 COVERAGE_FILTER='App\\Tests\\ControllerList'
-       - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=3 COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
-       - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=4 COVERAGE_FILTER='App\\Tests\\ControllerView'
+      script:
+        - true
+      after_script:
+         - echo "coverage"
+    - stage: test2_with_coverage
+      php: 7.2
+      env:
+       - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=1 COVERAGE_FILTER='App\\Tests\\ControllerIndex'
       script:
         - true
       after_script:
