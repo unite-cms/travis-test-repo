@@ -19,14 +19,28 @@ addons:
 stages:
   - name: test
     if: type == push AND branch = master AND fork = false
+    env:
+      - PHPUNIT_CONF=phpunit.xml.dist
+      - COVERAGE_ID=1
   - name: tests_with_coverage
     if: type == push AND branch = master AND fork = false
+    env:
+      - PHPUNIT_CONF=phpunit.xml.dist
+      - COVERAGE_ID=2
   - name: submit
     if: type == push AND branch = master AND fork = false
+    env:
+      - PHPUNIT_CONF=phpunit.xml.dist
 
 env:
   global:
     - JOB_COUNT=3 # four jobs generate test coverages
+
+matrix:
+    include:
+        - php: 7.1
+        - php: 7.2
+
 
 #matrix:
 #    include:
@@ -67,15 +81,10 @@ services:
 jobs:
   include:
     - stage: test
-      php:
-        - 7.1
-        - 7.2
       env:
       script:
       after_success:
     - stage: tests_with_coverage
-        - 7.1
-        - 7.2
       env:
       script:
       after_success:
