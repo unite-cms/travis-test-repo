@@ -17,7 +17,6 @@ addons:
       - mysql-server
 
 stages:
-  - prepare
   - test
   - submit
 
@@ -25,38 +24,48 @@ env:
   global:
     - JOB_COUNT=4 # four jobs generate test coverages
   matrix:
-    - TEST_TYPE=examples
-    - TEST_TYPE=tests
-    - TEST_TYPE=eth
+    - php: 7.1
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+#        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+#        - COVERAGE_ID=1
+    - php: 7.2
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+#        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+#        - COVERAGE_ID=1
+#    - TEST_TYPE=examples
+#    - TEST_TYPE=tests
+#    - TEST_TYPE=eth
 
-matrix:
-    include:
-        - php: 7.2
-          if: type == push AND branch = master AND fork = false
-          env:
-            - PHPUNIT_CONF=phpunit.xml.dist
-            - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-            - COVERAGE_ID=1
-        - php: 7.2
-          if: type == push AND branch = master AND fork = false
-          env:
-            - PHPUNIT_CONF=phpunit.xml.dist
-            - COVERAGE_FILTER='App\\Tests\\ControllerList'
-            - COVERAGE_ID=2
-        - php: 7.2
-          if: type == push AND branch = master AND fork = false
-          env:
-            - PHPUNIT_CONF=phpunit.xml.dist
-            - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
-            - COVERAGE_ID=3
-        - php: 7.2
-          if: type == push AND branch = master AND fork = false
-          env:
-            - PHPUNIT_CONF=phpunit.xml.dist
-            - COVERAGE_FILTER='App\\Tests\\ControllerView'
-            - COVERAGE_ID=4
-
-    fast_finish: true
+#matrix:
+#    include:
+#        - php: 7.2
+#          if: type == push AND branch = master AND fork = false
+#          env:
+#            - PHPUNIT_CONF=phpunit.xml.dist
+#            - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+#            - COVERAGE_ID=1
+#        - php: 7.2
+#          if: type == push AND branch = master AND fork = false
+#          env:
+#            - PHPUNIT_CONF=phpunit.xml.dist
+#            - COVERAGE_FILTER='App\\Tests\\ControllerList'
+#            - COVERAGE_ID=2
+#        - php: 7.2
+#          if: type == push AND branch = master AND fork = false
+#          env:
+#            - PHPUNIT_CONF=phpunit.xml.dist
+#            - COVERAGE_FILTER='App\\Tests\\ControllerUpdate'
+#            - COVERAGE_ID=3
+#        - php: 7.2
+#          if: type == push AND branch = master AND fork = false
+#          env:
+#            - PHPUNIT_CONF=phpunit.xml.dist
+#            - COVERAGE_FILTER='App\\Tests\\ControllerView'
+#            - COVERAGE_ID=4
+#
+#    fast_finish: true
 
 cache:
     directories:
@@ -67,11 +76,11 @@ services:
 
 jobs:
   include:
-    - stage: prepare
-      env: TEST_TYPE=env
-      script:
-        - ./cc-test-reporter before-build
-      after_success:
+#    - stage: test
+#      env: TEST_TYPE=env
+#      script:
+#        - ./cc-test-reporter before-build
+#      after_success:
     - stage: submit
       env: TEST_TYPE=env
       script:
@@ -92,13 +101,16 @@ before_install:
   - cp .env.dist .env
 
 install:
+  - sudo apt-get install -y awscli
+  - composer install
+
+before_script:
   - |
     if [[ $COVERAGE_FILTER ]]; then
       curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       chmod +x ./cc-test-reporter
+      ./cc-test-reporter before-build
     fi
-  - sudo apt-get install -y awscli
-  - composer install
 
 script:
   - |
