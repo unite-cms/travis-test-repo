@@ -75,6 +75,7 @@ before_install:
 
 install:
   - sudo apt-get install -y awscli s3cmd
+  - s3cmd --version
   - composer install
 
 before_script:
