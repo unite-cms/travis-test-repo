@@ -22,11 +22,19 @@ stages:
     env:
       - PHPUNIT_CONF=phpunit.xml.dist
       - COVERAGE_ID=1
+    matrix:
+      include:
+        - php: 7.1
+        - php: 7.2
   - name: tests_with_coverage
     if: type == push AND branch = master AND fork = false
     env:
       - PHPUNIT_CONF=phpunit.xml.dist
       - COVERAGE_ID=2
+    matrix:
+      include:
+        - php: 7.1
+        - php: 7.2
   - name: submit
     if: type == push AND branch = master AND fork = false
     env:
@@ -36,10 +44,7 @@ env:
   global:
     - JOB_COUNT=3 # four jobs generate test coverages
 
-matrix:
-    include:
-        - php: 7.1
-        - php: 7.2
+
 
 
 #matrix:
