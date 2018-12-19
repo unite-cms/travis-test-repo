@@ -54,6 +54,8 @@ jobs:
         - COVERAGE_FILTER='App\\Tests\\ControllerView'
         - COVERAGE_ID=4
     - stage: submit
+      addons:
+      services:
       env:
         - JOB_COUNT_COVERAGE=4 # 4 jobs are generating coverages
       install:
