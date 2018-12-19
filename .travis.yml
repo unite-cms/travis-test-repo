@@ -16,6 +16,14 @@ addons:
     packages:
       - mysql-server
 
+php:
+  - 7.1
+  - 7.2
+
+env:
+  - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=1
+  - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=2
+
 stages:
   - name: test
     if: type == push AND branch = master AND fork = false
@@ -24,20 +32,20 @@ stages:
   - name: submit
     if: type == push AND branch = master AND fork = false
 
-matrix:
-  include:
-    - php: 7.1
-      if: type == push AND branch = master AND fork = false
-      env:
-        - PHPUNIT_CONF=phpunit.xml.dist
-        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-        #- COVERAGE_ID=1
-    - php: 7.2
-      if: type == push AND branch = master AND fork = false
-      env:
-        - PHPUNIT_CONF=phpunit.xml.dist
-        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-        #- COVERAGE_ID=1
+#matrix:
+#  include:
+#    - php: 7.1
+#      if: type == push AND branch = master AND fork = false
+#      env:
+#        - PHPUNIT_CONF=phpunit.xml.dist
+#        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+#        #- COVERAGE_ID=1
+#    - php: 7.2
+#      if: type == push AND branch = master AND fork = false
+#      env:
+#        - PHPUNIT_CONF=phpunit.xml.dist
+#        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+#        #- COVERAGE_ID=1
 #        - php: 7.2
 #          if: type == push AND branch = master AND fork = false
 #          env:
