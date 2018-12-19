@@ -1,7 +1,7 @@
 language: php
 
 sudo: false
-dist: trusty
+dist: xenial
 os: linux
 
 cache:
@@ -75,13 +75,11 @@ before_install:
 
 install:
   - sudo apt-get install -y awscli s3cmd
-  - s3cmd --version
   - composer install
 
 before_script:
   - |
     echo -e "use_https = True\nbucket_location = us-east-1\nsignature_v2 = False\nhost_base = $S3_HOST\nhost_bucket = $S3_HOST" > ~/.s3cfg
-    cat ~/.s3cfg
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
     ./cc-test-reporter before-build
