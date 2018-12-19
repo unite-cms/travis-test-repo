@@ -34,7 +34,7 @@ stages:
 
 env:
   global:
-    - JOB_COUNT=3 # four jobs generate test coverages
+    - JOB_COUNT=2 # four jobs generate test coverages
   matrix:
     - php: 7.1
     - php: 7.2
