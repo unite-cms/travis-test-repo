@@ -22,7 +22,6 @@ php:
 
 env:
   - PHPUNIT_CONF=phpunit.xml.dist
-  - PHPUNIT_CONF=phpunit.xml.dist
 
 stages:
   - name: test
@@ -77,7 +76,11 @@ services:
 jobs:
   include:
     - stage: tests_with_coverage
-      php: 7.2
+      php: 
+       - 7.2
+       - 7.2
+       - 7.2
+       - 7.2
       env:
        - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=1 COVERAGE_FILTER='App\\Tests\\ControllerIndex'
        - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=2 COVERAGE_FILTER='App\\Tests\\ControllerList'
