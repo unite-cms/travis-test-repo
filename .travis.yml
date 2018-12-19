@@ -59,7 +59,7 @@ jobs:
       install:
       script:
       after_script:
-        - s3cmd sync "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT" coverage/ 
+        - s3cmd sync "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT" coverage/ --secret_key=$S3_SECRET_KEY --access_key=$S3_ACCESS_KEY --config=.s3cfg
         - ./cc-test-reporter sum-coverage --output - --parts $JOB_COUNT_COVERAGE coverage/clover.*.xml | ./cc-test-reporter upload-coverage --input - 
 
 before_install:
@@ -79,7 +79,7 @@ install:
 
 before_script:
   - |
-    echo -e "use_https = True\nbucket_location = us-east-1\nsignature_v2 = True\nhost_base = $S3_HOST\nhost_bucket = $S3_HOST\naccess_key = $S3_ACCESS_KEY\nsecret_key = $S3_SECRET_KEY" > ~/.s3cfg
+    echo -e "use_https = True\nbucket_location = us-east-1\nsignature_v2 = False\nhost_base = $S3_HOST\nhost_bucket = $S3_HOST" > .s3cfg
     cat ~/.s3cfg
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
@@ -90,7 +90,7 @@ script:
     if [[ $COVERAGE_FILTER ]]; then
       phpunit --configuration $PHPUNIT_CONF --coverage-clover clover.xml --filter $COVERAGE_FILTER
       ./cc-test-reporter format-coverage -t clover -o coverage/clover.$COVERAGE_ID.xml clover.xml
-      s3cmd sync coverage/ "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT"
+      s3cmd sync coverage/ "s3://$S3_BUCKET/coverage/$TRAVIS_COMMIT" --secret_key=$S3_SECRET_KEY --access_key=$S3_ACCESS_KEY --config=.s3cfg
     else
       phpunit --configuration $PHPUNIT_CONF
     fi
