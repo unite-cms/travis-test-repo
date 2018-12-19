@@ -16,35 +16,26 @@ addons:
     packages:
       - mysql-server
 
-php:
-  - 7.1
-  - 7.2
-
-env:
-  - PHPUNIT_CONF=phpunit.xml.dist
-
 stages:
   - name: test
-    if: type == push AND branch = master AND fork = false
-  - name: tests_with_coverage
     if: type == push AND branch = master AND fork = false
   - name: submit
     if: type == push AND branch = master AND fork = false
 
-#matrix:
-#  include:
-#    - php: 7.1
-#      if: type == push AND branch = master AND fork = false
-#      env:
-#        - PHPUNIT_CONF=phpunit.xml.dist
-#        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#        #- COVERAGE_ID=1
-#    - php: 7.2
-#      if: type == push AND branch = master AND fork = false
-#      env:
-#        - PHPUNIT_CONF=phpunit.xml.dist
-#        #- COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-#        #- COVERAGE_ID=1
+matrix:
+  include:
+    - php: 7.1
+      if: type == push AND branch = master AND fork = false
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+        - COVERAGE_ID=1
+    - php: 7.2
+      if: type == push AND branch = master AND fork = false
+      env:
+        - PHPUNIT_CONF=phpunit.xml.dist
+        - COVERAGE_FILTER='App\\Tests\\ControllerIndex'
+#       - COVERAGE_ID=1
 #        - php: 7.2
 #          if: type == push AND branch = master AND fork = false
 #          env:
@@ -64,7 +55,7 @@ stages:
 #            - COVERAGE_FILTER='App\\Tests\\ControllerView'
 #            - COVERAGE_ID=4
 #
-#    fast_finish: true
+    fast_finish: true
 
 cache:
     directories:
@@ -75,22 +66,6 @@ services:
 
 jobs:
   include:
-    - stage: test1_with_coverage
-      php: 7.2
-      env:
-       - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=1 COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-      script:
-        - true
-      after_script:
-         - echo "coverage"
-    - stage: test2_with_coverage
-      php: 7.2
-      env:
-       - PHPUNIT_CONF=phpunit.xml.dist COVERAGE_ID=1 COVERAGE_FILTER='App\\Tests\\ControllerIndex'
-      script:
-        - true
-      after_script:
-         - echo "coverage"
     - stage: submit
       env: 
       script:
