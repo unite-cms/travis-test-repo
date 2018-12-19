@@ -73,14 +73,11 @@ before_install:
       composer self-update
       mysql -e 'CREATE DATABASE travis_test;'
       cp .env.dist .env
+      composer install
     fi
 
 install:
-  - |
-    sudo apt-get install -y awscli s3cmd
-    if [[ $TEST ]]; then
-      composer install
-    fi
+  - sudo apt-get install -y awscli s3cmd
 
 before_script:
   - |
