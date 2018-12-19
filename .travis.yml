@@ -79,7 +79,7 @@ install:
 
 before_script:
   - |
-    echo -e "use_https = True\nbucket_location = us-east-1\nsignature_v2 = False\nhost_base = $S3_HOST\nhost_bucket = $S3_HOST\naccess_key = $S3_ACCESS_KEY\nsecret_key = $S3_SECRET_KEY" > ~/.s3cfg
+    echo -e "use_https = True\nbucket_location = us-east-1\nsignature_v2 = True\nhost_base = $S3_HOST\nhost_bucket = $S3_HOST\naccess_key = $S3_ACCESS_KEY\nsecret_key = $S3_SECRET_KEY" > ~/.s3cfg
     cat ~/.s3cfg
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
