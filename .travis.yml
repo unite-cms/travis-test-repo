@@ -19,18 +19,10 @@ addons:
 stages:
   - name: test
     if: type == push AND branch = master AND fork = false
-    env:
-      - PHPUNIT_CONF=phpunit.xml.dist
-      - COVERAGE_ID=1
   - name: tests_with_coverage
     if: type == push AND branch = master AND fork = false
-    env:
-      - PHPUNIT_CONF=phpunit.xml.dist
-      - COVERAGE_ID=2
   - name: submit
     if: type == push AND branch = master AND fork = false
-    env:
-      - PHPUNIT_CONF=phpunit.xml.dist
 
 env:
   global:
@@ -81,14 +73,6 @@ services:
 
 jobs:
   include:
-    - stage: test
-      env:
-      script:
-      after_success:
-    - stage: tests_with_coverage
-      env:
-      script:
-      after_success:
     - stage: submit
       env: 
       script:
