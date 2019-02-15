@@ -6,8 +6,9 @@ os: linux
 
 cache:
   directories:
-    - vendor
+    #- vendor
     - coverage
+    - $HOME/.composer/cache/files
 
 addons:
   apt:
@@ -16,9 +17,9 @@ addons:
     packages:
       - mysql-server
 
-cache:
-    directories:
-        - $HOME/.composer/cache/files
+env:
+  global:
+    - SYMFONY_DEPRECATIONS_HELPER=weak
 
 services:
   - mysql
